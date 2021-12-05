@@ -7,7 +7,7 @@ import appLogo from "/assets/logo.png";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
 
-const LoginScreen = ({ navigation, setIsAuthenticated }) => {
+const LoginScreen = ({ setIsAuthenticated }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View flex width="60%">
