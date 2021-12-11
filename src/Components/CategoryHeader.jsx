@@ -3,8 +3,15 @@ import { View, Text, Typography, Button } from "react-native-ui-lib";
 import DoubleClick from "react-native-double-tap";
 import DelayInput from "react-native-debounce-input";
 import trashCan from "/assets/trash.png";
+import plus from "assets/plus.png";
 
-const CategoryHeader = ({ title, setCategories, removeCategory, addTask }) => {
+const CategoryHeader = ({
+  title,
+  setCategories,
+  removeCategory,
+  addTask,
+  navigation,
+}) => {
   const [inputMode, setInputMode] = useState(false);
   const [categoryTitle, setCategoryTitle] = useState(title);
   const [oldCategoryTitle, setOldCategoryTitle] = useState(title);
@@ -60,11 +67,12 @@ const CategoryHeader = ({ title, setCategories, removeCategory, addTask }) => {
       <View row center style={{ marginLeft: "auto" }}>
         <Button
           marginR-20
-          label="+"
+          iconSource={plus}
+          iconStyle={{ width: 32, height: 32 }}
           link
           labelStyle={Typography.text30}
           color="black"
-          onPress={() => addTask("", title)}
+          onPress={() => navigation.navigate("AddTaskScreen")}
         />
         <Button
           onPress={() => removeCategory(title)}

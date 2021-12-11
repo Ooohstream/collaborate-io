@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Button,
-  Typography,
-  TouchableOpacity,
-} from "react-native-ui-lib";
+import { View, Text, Typography, TouchableOpacity } from "react-native-ui-lib";
 
 const ProjectTile = (props) => {
   return (

@@ -13,7 +13,7 @@ const NotificationPopover = ({}) => {
         round
         size="large"
         iconSource={notifications}
-        iconStyle={{ width: 32, height: 32 }}
+        iconStyle={{ width: 28, height: 28 }}
         ref={notificationsPopover.touchableRef}
         onPress={notificationsPopover.openPopover}
       />

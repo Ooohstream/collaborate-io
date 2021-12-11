@@ -9,10 +9,12 @@ import AddCategoryFlipper from "../AddCategoryFlipper";
 import { useEffect } from "react/cjs/react.development";
 import ProjectSettingsScreen from "./ProjectSettingsScreen";
 import HeaderRightProjectScreen from "../HeaderRightProjectScreen";
+import EditTaskScreen from "./EditTaskScreen";
+import AddTaskScreen from "./AddTaskScreen";
 
 const Project = createNativeStackNavigator();
 
-const ProjectScreen = () => {
+const ProjectScreen = ({ navigation }) => {
   const [categories, setCategories] = useState([
     {
       title: "Design",
@@ -78,6 +80,7 @@ const ProjectScreen = () => {
         setCategories={setCategories}
         removeCategory={removeCategory}
         addTask={addTask}
+        navigation={navigation}
       />
     );
   };
@@ -90,6 +93,7 @@ const ProjectScreen = () => {
             setCategories={setCategories}
             task={task}
             section={section}
+            navigation={navigation}
           />
         ))}
       </View>
@@ -102,7 +106,10 @@ const ProjectScreen = () => {
 
   return (
     <Project.Navigator
-      screenOptions={{ headerStyle: { backgroundColor: "#0080FF" } }}
+      screenOptions={{
+        headerStyle: { backgroundColor: "#0080FF" },
+        headerShadowVisible: false,
+      }}
     >
       <Project.Screen
         name="ProjectMain"
@@ -141,8 +148,14 @@ const ProjectScreen = () => {
           </ScrollView>
         )}
       </Project.Screen>
-      <Project.Screen name="ProjectSettingsScreen">
+      <Project.Screen name="ProjectSettingsScreen" options={{ title: "" }}>
         {(props) => <ProjectSettingsScreen {...props} />}
+      </Project.Screen>
+      <Project.Screen name="EditTaskScreen" options={{ title: "" }}>
+        {(props) => <EditTaskScreen {...props} />}
+      </Project.Screen>
+      <Project.Screen name="AddTaskScreen" options={{ title: "" }}>
+        {(props) => <AddTaskScreen {...props} />}
       </Project.Screen>
     </Project.Navigator>
   );

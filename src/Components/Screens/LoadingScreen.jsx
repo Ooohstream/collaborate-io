@@ -4,9 +4,9 @@ import appLogo from "/assets/logo.png";
 
 const LoadingScreen = () => {
   return (
-    <View flex center>
-      <Icon tintColor={"#0080FF"} size={100} source={appLogo} />
-      <Text text60 black>
+    <View flex center backgroundColor="#0080FF">
+      <Icon tintColor={"white"} size={100} source={appLogo} />
+      <Text text60 white>
         Collaborate.io
       </Text>
     </View>

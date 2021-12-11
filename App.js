@@ -5,17 +5,21 @@ import ProjectScreen from "./src/Components/Screens/ProjectScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DashboardScreen from "./src/Components/Screens/DashboardScreen";
-import { Button, View } from "react-native-ui-lib";
-import search from "/assets/search.png";
-import HeaderRightProjectScreen from "./src/Components/HeaderRightProjectScreen";
-import NotificationPopover from "./src/Components/NotificationPopover";
-import MenuPopover from "./src/Components/MenuPopover";
+import { Provider } from "react-redux";
+import { store } from "./src/store";
+import { useSelector } from "react-redux";
 
 const Stack = createNativeStackNavigator();
 
-export default App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export default AppWrapper = () => (
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+
+const App = () => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const isAuth = useSelector((state) => state.auth.isAuth);
 
   useEffect(() => {
     setTimeout(() => {
@@ -31,29 +35,12 @@ export default App = () => {
         }}
       >
         {isLoaded ? (
-          isAuthenticated ? (
+          isAuth ? (
             <>
               <Stack.Screen
                 name="Dashboard"
                 component={DashboardScreen}
-                options={({ navigation }) => ({
-                  title: "",
-                  headerStyle: { backgroundColor: "#0080FF" },
-                  headerLeft: () => <MenuPopover />,
-                  headerRight: () => (
-                    <View height="100%" row center>
-                      <Button
-                        round
-                        size="large"
-                        iconStyle={{ width: 32, height: 32 }}
-                        iconSource={search}
-                        link
-                        linkColor="black"
-                      />
-                      <NotificationPopover />
-                    </View>
-                  ),
-                })}
+                options={{ headerShown: false }}
               />
               <Stack.Screen
                 name="ProjectScreen"
@@ -63,12 +50,7 @@ export default App = () => {
             </>
           ) : (
             <Stack.Screen name="Entrance" options={{ headerShown: false }}>
-              {(props) => (
-                <LoginScreen
-                  {...props}
-                  setIsAuthenticated={setIsAuthenticated}
-                />
-              )}
+              {(props) => <LoginScreen {...props} />}
             </Stack.Screen>
           )
         ) : (

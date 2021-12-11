@@ -7,7 +7,7 @@ import {
   Checkbox,
 } from "react-native-ui-lib";
 
-const TaskItem = ({ task, setCategories, section }) => {
+const TaskItem = ({ task, setCategories, section, navigation }) => {
   const handleCheck = (e) => {
     setCategories((prev) => {
       const newCategories = [...prev];
@@ -23,7 +23,14 @@ const TaskItem = ({ task, setCategories, section }) => {
 
   return (
     <View key={task.id} bg-white row br50 padding-20 marginV-5>
-      <TouchableOpacity activeOpacity={0.6} flex-1 spread>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("EditTaskScreen");
+        }}
+        activeOpacity={0.6}
+        flex-1
+        spread
+      >
         <Text style={{ fontSize: 20 }}>{task.title}</Text>
         <Text>{task.description}</Text>
         <View flex row marginT-5 style={{ flexWrap: "wrap" }}>
