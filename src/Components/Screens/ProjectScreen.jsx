@@ -40,7 +40,9 @@ const ProjectScreen = ({ navigation }) => {
   ]);
 
   useEffect(() => {
+    const savedActiveSections = activeSections;
     setActiveSections([]);
+    setActiveSections(savedActiveSections);
   }, [categories]);
 
   const addCategory = (categoryTitle) => {

@@ -1,14 +1,40 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Text, View, Button, Icon } from "react-native-ui-lib";
 import g from "/assets/g.png";
 import appLogo from "/assets/logo.png";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Animated } from "react-native";
 import * as Google from "expo-google-app-auth";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../../store/authSlice";
 
 const LoginScreen = () => {
+  const fadeAnim = useRef(new Animated.Value(50)).current;
+
+  const fadeIn = () => {
+    // Will change fadeAnim value to 1 in 5 seconds
+    Animated.timing(fadeAnim, {
+      toValue: 100,
+      duration: 2000,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  useEffect(() => {
+    return () => {
+      fadeOut();
+    };
+  }, []);
+
+  const fadeOut = () => {
+    // Will change fadeAnim value to 0 in 3 seconds
+    Animated.timing(fadeAnim, {
+      toValue: 50,
+      duration: 3000,
+      useNativeDriver: false,
+    }).start();
+  };
+
   const dispatcher = useDispatch();
 
   const signInAsync = async () => {
@@ -27,6 +53,8 @@ const LoginScreen = () => {
     }
   };
 
+  const AnimatedButton = Animated.createAnimatedComponent(Button);
+
   return (
     <SafeAreaView style={styles.container}>
       <View flex width="60%">
@@ -36,18 +64,21 @@ const LoginScreen = () => {
             Collaborate.io
           </Text>
         </View>
-        <View flex-1 spread marginB-100>
-          <Button
-            text70
+        <View flex-1 center marginB-100>
+          <AnimatedButton
+            style={{ width: fadeAnim, height: fadeAnim }}
             iconOnRight
             bg-white
-            label="Login with Google"
             color="black"
+            round
             iconSource={g}
-            iconStyle={{ width: 25, height: 25, tintColor: "#0080FF" }}
+            iconStyle={{ width: 35, height: 35, tintColor: "#0080FF" }}
             size="large"
             onPress={() => {
-              signInAsync();
+              fadeIn();
+              setTimeout(() => {
+                signInAsync();
+              }, 2000);
             }}
           />
         </View>

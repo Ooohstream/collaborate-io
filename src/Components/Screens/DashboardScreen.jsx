@@ -17,6 +17,7 @@ import { Typography } from "react-native-ui-lib";
 import * as Clipboard from "expo-clipboard";
 import uuid from "react-native-uuid";
 import join from "/assets/join.png";
+import plus from "/assets/plus.png";
 
 const Dashboard = createNativeStackNavigator();
 
@@ -71,11 +72,18 @@ const DashboardScreen = ({ navigation }) => {
               )}
             />
             <Button
-              style={{ position: "absolute", top: "92%", left: "84%" }}
+              style={{
+                position: "absolute",
+                top: "92%",
+                left: "84%",
+                width: 48,
+                height: 48,
+              }}
               round
               text60BL
-              backgroundColor="#0080FF"
-              label="+"
+              backgroundColor="white"
+              iconSource={plus}
+              iconStyle={{ width: 40, height: 40 }}
               onPress={() => {
                 navigation.navigate("DashboardCreateProject");
               }}
