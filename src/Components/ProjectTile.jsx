@@ -16,7 +16,7 @@ const ProjectTile = (props) => {
     >
       <View flex-1 bg-grey50 flexG></View>
       <View bg-grey50 flex-1 centerH width="100%" style={{ borderRadius: 10 }}>
-        <Text style={Typography.text60}>{props.item}</Text>
+        <Text style={Typography.text60}>{props.item.name}</Text>
       </View>
     </TouchableOpacity>
   );

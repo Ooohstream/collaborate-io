@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import {
   View,
@@ -6,36 +7,33 @@ import {
   Chip,
   Checkbox,
 } from "react-native-ui-lib";
+import PROXY from "../proxyConfig";
 
-const TaskItem = ({ task, setCategories, section, navigation }) => {
-  const handleCheck = (e) => {
-    setCategories((prev) => {
-      const newCategories = [...prev];
-      newCategories
-        .find((category) => category.title === section.title)
-        .tasks.find((goalTask) => goalTask.id === task.id).isDone = !prev
-        .find((category) => category.title === section.title)
-        .tasks.find((goalTask) => goalTask.id === task.id).isDone;
-
-      return newCategories;
+const TaskItem = ({ task, setCategories, category, navigation, projectId }) => {
+  const handleCheck = async () => {
+    const { data } = await axios.put(`${PROXY}/task/set-done`, {
+      projectId,
+      categoryId: category,
+      id: task.id,
     });
+    setCategories(data);
   };
 
   return (
     <View key={task.id} bg-white row br50 padding-20 marginV-5>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("EditTaskScreen");
+          navigation.navigate("EditTaskScreen", { projectId, category, task });
         }}
         activeOpacity={0.6}
         flex-1
         spread
       >
-        <Text style={{ fontSize: 20 }}>{task.title}</Text>
+        <Text style={{ fontSize: 20 }}>{task.name}</Text>
         <Text>{task.description}</Text>
         <View flex row marginT-5 style={{ flexWrap: "wrap" }}>
           {task.workers.map((worker) => (
-            <Chip label={worker} />
+            <Chip key={worker.id} label={worker.name} />
           ))}
         </View>
       </TouchableOpacity>

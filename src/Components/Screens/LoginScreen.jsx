@@ -7,30 +7,16 @@ import { StyleSheet, Animated } from "react-native";
 import * as Google from "expo-google-app-auth";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../../store/authSlice";
+import axios from "axios";
+import PROXY from "../../proxyConfig";
 
 const LoginScreen = () => {
-  const fadeAnim = useRef(new Animated.Value(50)).current;
+  const expand = useRef(new Animated.Value(50)).current;
 
-  const fadeIn = () => {
-    // Will change fadeAnim value to 1 in 5 seconds
-    Animated.timing(fadeAnim, {
+  const expandIn = () => {
+    Animated.timing(expand, {
       toValue: 100,
-      duration: 2000,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  useEffect(() => {
-    return () => {
-      fadeOut();
-    };
-  }, []);
-
-  const fadeOut = () => {
-    // Will change fadeAnim value to 0 in 3 seconds
-    Animated.timing(fadeAnim, {
-      toValue: 50,
-      duration: 3000,
+      duration: 500,
       useNativeDriver: false,
     }).start();
   };
@@ -46,6 +32,12 @@ const LoginScreen = () => {
       if (type === "success") {
         console.log(`Login ${type}`);
         const { email, id, name, photoUrl } = user;
+        await axios.post(`${PROXY}/authorization`, {
+          email,
+          id,
+          name,
+          photoUrl,
+        });
         dispatcher(setAuth({ email, id, name, photoUrl }));
       }
     } catch (error) {
@@ -66,7 +58,10 @@ const LoginScreen = () => {
         </View>
         <View flex-1 center marginB-100>
           <AnimatedButton
-            style={{ width: fadeAnim, height: fadeAnim }}
+            style={{
+              width: expand,
+              height: expand,
+            }}
             iconOnRight
             bg-white
             color="black"
@@ -75,10 +70,10 @@ const LoginScreen = () => {
             iconStyle={{ width: 35, height: 35, tintColor: "#0080FF" }}
             size="large"
             onPress={() => {
-              fadeIn();
+              expandIn();
               setTimeout(() => {
                 signInAsync();
-              }, 2000);
+              }, 200);
             }}
           />
         </View>

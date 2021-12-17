@@ -4,30 +4,36 @@ import DoubleClick from "react-native-double-tap";
 import DelayInput from "react-native-debounce-input";
 import trashCan from "/assets/trash.png";
 import plus from "assets/plus.png";
+import axios from "axios";
+import PROXY from "../proxyConfig";
+import { TouchableOpacity } from "react-native";
 
 const CategoryHeader = ({
-  title,
+  projectId,
+  id,
+  name,
   setCategories,
-  removeCategory,
   addTask,
   navigation,
 }) => {
   const [inputMode, setInputMode] = useState(false);
-  const [categoryTitle, setCategoryTitle] = useState(title);
-  const [oldCategoryTitle, setOldCategoryTitle] = useState(title);
 
-  useEffect(() => {
-    if (categoryTitle) {
-      setCategories((prev) => {
-        const newCategories = [...prev];
-        newCategories.find(
-          (category) => category.title === oldCategoryTitle
-        ).title = categoryTitle;
-        return newCategories;
-      });
-      setOldCategoryTitle(categoryTitle);
-    } else setCategoryTitle(title);
-  }, [categoryTitle]);
+  const handleRemove = async () => {
+    const { data } = await axios.delete(`${PROXY}/categories/remove`, {
+      params: { projectId, id },
+    });
+    setCategories(data);
+  };
+
+  const handleNameChange = async (newName) => {
+    const { data } = await axios.patch(`${PROXY}/categories/edit`, {
+      projectId,
+      id,
+      name: newName,
+    });
+    setCategories(data);
+    setInputMode(!inputMode);
+  };
 
   return (
     <View
@@ -43,25 +49,24 @@ const CategoryHeader = ({
           <DelayInput
             underlineColorAndroid="transparent"
             onChangeText={(e) => {
-              setCategoryTitle(e);
-              setInputMode(!inputMode);
+              handleNameChange(e);
             }}
             delayTimeout={500}
-            value={categoryTitle}
+            value={name}
             style={{
               ...Typography.text40,
               borderBottomWidth: 1,
-              borderBottomColor: "gray",
+              borderBottomColor: "transparent",
             }}
           />
         ) : (
-          <DoubleClick
-            doubleTap={() => {
+          <TouchableOpacity
+            onPress={() => {
               setInputMode(!inputMode);
             }}
           >
-            <Text style={Typography.text40}>{title}</Text>
-          </DoubleClick>
+            <Text style={Typography.text40}>{name}</Text>
+          </TouchableOpacity>
         )}
       </View>
       <View row center style={{ marginLeft: "auto" }}>
@@ -72,10 +77,12 @@ const CategoryHeader = ({
           link
           labelStyle={Typography.text30}
           color="black"
-          onPress={() => navigation.navigate("AddTaskScreen")}
+          onPress={() =>
+            navigation.navigate("AddTaskScreen", { categoryId: id, projectId })
+          }
         />
         <Button
-          onPress={() => removeCategory(title)}
+          onPress={() => handleRemove()}
           style={{ alignSelf: "flex-end" }}
           link
           iconSource={trashCan}

@@ -3,12 +3,20 @@ import { createSlice } from "@reduxjs/toolkit";
 const projectsSlice = createSlice({
   name: "projects",
   initialState: [],
-  reducers: {},
+  reducers: {
+    setProjects(state, { payload }) {
+      state = payload;
+      return state;
+    },
+    addProject(state, { payload }) {
+      state.push(payload);
+      return state;
+    },
+  },
 });
 
 export default projectsSlice.reducer;
-export const {} = projectsSlice.actions;
-
+export const { setProjects, addProject } = projectsSlice.actions;
 // {
 //     projectId: undefined,
 //     projectName: undefined,

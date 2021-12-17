@@ -2,10 +2,29 @@ import React, { useState } from "react";
 import { View, TextField, Button } from "react-native-ui-lib";
 import FlipCard from "react-native-flip-card";
 import DelayInput from "react-native-debounce-input";
+import axios from "axios";
+import PROXY from "../proxyConfig";
+import uuid from "react-native-uuid";
 
-const AddCategoryFlipper = ({ addCategory }) => {
+const AddCategoryFlipper = ({ setCategories, projectId }) => {
   const [flip, setFlip] = useState(false);
-  const [categoryTitle, setCategoryTitle] = useState("");
+  const [name, setName] = useState("");
+
+  const handleChange = async (e) => {
+    if (e) {
+      const { data } = await axios.post(`${PROXY}/categories/add`, {
+        projectId,
+        category: {
+          id: uuid.v4(),
+          name: e,
+          tasks: [],
+        },
+      });
+      setCategories(data);
+      setName("");
+      setFlip(!flip);
+    }
+  };
 
   return (
     <FlipCard
@@ -26,7 +45,7 @@ const AddCategoryFlipper = ({ addCategory }) => {
       />
       <View center>
         <DelayInput
-          value={categoryTitle}
+          value={name}
           style={{
             width: "95%",
             borderBottomWidth: 1,
@@ -35,9 +54,7 @@ const AddCategoryFlipper = ({ addCategory }) => {
           }}
           delayTimeout={1000}
           onChangeText={(e) => {
-            if (e) addCategory(e);
-            setCategoryTitle("");
-            setFlip(!flip);
+            handleChange(e);
           }}
           placeholder="Category name"
         />

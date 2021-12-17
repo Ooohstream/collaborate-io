@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Button, TextField } from "react-native-ui-lib";
+import { View } from "react-native-ui-lib";
 import Accordion from "react-native-collapsible/Accordion";
 import { ScrollView } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -11,77 +11,35 @@ import ProjectSettingsScreen from "./ProjectSettingsScreen";
 import HeaderRightProjectScreen from "../HeaderRightProjectScreen";
 import EditTaskScreen from "./EditTaskScreen";
 import AddTaskScreen from "./AddTaskScreen";
+import axios from "axios";
+import PROXY from "../../proxyConfig";
 
 const Project = createNativeStackNavigator();
 
-const ProjectScreen = ({ navigation }) => {
-  const [categories, setCategories] = useState([
-    {
-      title: "Design",
-      tasks: [
-        {
-          id: 1,
-          title: "Design problem",
-          description: "Design problem description ...",
-          workers: ["John Worker"],
-          isDone: false,
-          badgeColor: "blue",
-        },
-        {
-          id: 2,
-          title: "Design problem 2",
-          description: "Design problem 2 description ...",
-          workers: ["Jamie Worker"],
-          isDone: true,
-          badgeColor: "red",
-        },
-      ],
-    },
-  ]);
+const ProjectScreen = ({ route, navigation }) => {
+  const [categories, setCategories] = useState([]);
+  const [activeSections, setActiveSections] = useState([]);
 
   useEffect(() => {
-    const savedActiveSections = activeSections;
-    setActiveSections([]);
-    setActiveSections(savedActiveSections);
-  }, [categories]);
-
-  const addCategory = (categoryTitle) => {
-    setCategories([...categories, { title: categoryTitle, tasks: [] }]);
-  };
-
-  const removeCategory = (categoryTitle) => {
-    setCategories(
-      categories.filter((category) => category.title !== categoryTitle)
-    );
-  };
-
-  const addTask = (taskTitle, categoryTitle) => {
-    setCategories((prev) => {
-      const newCategories = [...prev];
-      newCategories
-        .find((category) => category.title === categoryTitle)
-        .tasks.push({
-          id: Date.now(),
-          title: "Sample problem",
-          description: "Sample problem description ...",
-          workers: ["Jamie Worker"],
-          isDone: true,
-          badgeColor: "yellow",
-        });
-      return newCategories;
-    });
-  };
-
-  const [activeSections, setActiveSections] = useState([]);
+    const init = async () => {
+      const { data } = await axios.get(`${PROXY}/categories`, {
+        params: {
+          id: route.params.id,
+        },
+      });
+      setCategories(data);
+    };
+    init();
+  }, []);
 
   const _renderHeader = (section) => {
     return (
       <CategoryHeader
-        categories={categories}
-        title={section.title}
+        key={section.id}
+        id={section.id}
+        projectId={route.params.id}
+        name={section.name}
         setCategories={setCategories}
-        removeCategory={removeCategory}
-        addTask={addTask}
         navigation={navigation}
       />
     );
@@ -89,15 +47,19 @@ const ProjectScreen = ({ navigation }) => {
 
   const _renderContent = (section) => {
     return (
-      <View style={{ padding: 5 }}>
-        {section.tasks.map((task) => (
-          <TaskItem
-            setCategories={setCategories}
-            task={task}
-            section={section}
-            navigation={navigation}
-          />
-        ))}
+      <View padding-5>
+        {section.tasks.map((task) => {
+          return (
+            <TaskItem
+              projectId={route.params.id}
+              key={task.id}
+              setCategories={setCategories}
+              task={task}
+              category={section.id}
+              navigation={navigation}
+            />
+          );
+        })}
       </View>
     );
   };
@@ -146,7 +108,10 @@ const ProjectScreen = ({ navigation }) => {
               renderContent={_renderContent}
               onChange={_updateSections}
             />
-            <AddCategoryFlipper addCategory={addCategory} />
+            <AddCategoryFlipper
+              projectId={route.params.id}
+              setCategories={setCategories}
+            />
           </ScrollView>
         )}
       </Project.Screen>
@@ -157,7 +122,7 @@ const ProjectScreen = ({ navigation }) => {
         {(props) => <EditTaskScreen {...props} />}
       </Project.Screen>
       <Project.Screen name="AddTaskScreen" options={{ title: "" }}>
-        {(props) => <AddTaskScreen {...props} />}
+        {(props) => <AddTaskScreen {...props} setCategories={setCategories} />}
       </Project.Screen>
     </Project.Navigator>
   );
