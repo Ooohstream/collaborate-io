@@ -58,8 +58,6 @@ const App = () => {
   const scheme = useColorScheme();
   const theme = useSelector((state) => state.theme);
 
-  console.log(theme);
-
   useEffect(() => {
     const initApp = async () => {
       await AsyncStorage.getItem("user_info", (err, res) => {
