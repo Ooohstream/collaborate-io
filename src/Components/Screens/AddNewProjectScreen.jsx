@@ -5,11 +5,14 @@ import uuid from "react-native-uuid";
 import axios from "axios";
 import PROXY from "../../proxyConfig";
 import { useState } from "react/cjs/react.development";
-import { useDispatch, useSelector } from "react-redux";
-import { addProject } from "../../store/projectsSlice";
+import { useSelector } from "react-redux";
+import i18n from "../../Translation/i18n";
+import { useTheme } from "@react-navigation/native";
+import * as Clipboard from "expo-clipboard";
 
 const AddNewProjectScreen = ({ navigation, setProjects, projects }) => {
   const user = useSelector((state) => state.auth);
+  const { colors } = useTheme();
   const [addProjectForm, setAddProjectForm] = useState({
     id: uuid.v4(),
   });
@@ -24,11 +27,12 @@ const AddNewProjectScreen = ({ navigation, setProjects, projects }) => {
   };
 
   return (
-    <View flex backgroundColor="#0080FF" padding-10>
+    <View flex backgroundColor={colors.main} padding-10>
       <TextInput
-        placeholder="Project Name"
+        placeholder={i18n.t("ProjectNamePlaceholder")}
+        placeholderTextColor={colors.placeholder}
         style={{
-          backgroundColor: "white",
+          backgroundColor: colors.secondary,
           borderRadius: 10,
           padding: 10,
           ...Typography.text60,
@@ -38,12 +42,19 @@ const AddNewProjectScreen = ({ navigation, setProjects, projects }) => {
           setAddProjectForm({ ...addProjectForm, name: e });
         }}
       />
-      <View height={200} bg-white br20 marginV-10 flex-1>
+      <View
+        height={200}
+        backgroundColor={colors.secondary}
+        br20
+        marginV-10
+        flex-1
+      >
         <TextInput
           multiline={true}
-          placeholder="Description"
+          placeholder={i18n.t("ProjectDescriptionPlaceholder")}
+          placeholderTextColor={colors.placeholder}
           style={{
-            backgroundColor: "white",
+            backgroundColor: colors.secondary,
             borderRadius: 10,
             padding: 10,
             ...Typography.text60,
@@ -57,24 +68,39 @@ const AddNewProjectScreen = ({ navigation, setProjects, projects }) => {
       <TouchableOpacity
         activeOpacity={0.9}
         style={{
-          backgroundColor: "white",
+          backgroundColor: colors.secondary,
           padding: 10,
           borderRadius: 10,
           marginVertical: 10,
+          justifyContent: "center",
+          alignItems: "center",
         }}
+        onPress={() => Clipboard.setString(addProjectForm.id)}
       >
-        <Text style={Typography.text60}>Press to copy id to clipboard!</Text>
-        <Text style={Typography.text70}>
-          You can share it to invite collaborators.
+        <Text
+          style={{
+            ...Typography.text60,
+            color: colors.black,
+            textAlign: "center",
+          }}
+        >
+          {i18n.t("ProjectYouCanShare")}
         </Text>
-        <Text>{addProjectForm.id}</Text>
+        <Text
+          style={{
+            ...Typography.text70,
+            color: colors.black,
+            textAlign: "center",
+          }}
+        >
+          {addProjectForm.id}
+        </Text>
       </TouchableOpacity>
       <Button
-        labelStyle={Typography.text60}
-        color="#0080FF"
-        backgroundColor="white"
+        labelStyle={{ ...Typography.text60, color: colors.secondary }}
+        backgroundColor={colors.accent}
         marginV-10
-        label="Create"
+        label={i18n.t("ProjectCreateButton")}
         onPress={() => {
           handleCreate();
         }}

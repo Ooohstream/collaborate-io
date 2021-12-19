@@ -1,3 +1,4 @@
+import { useTheme } from "@react-navigation/native";
 import axios from "axios";
 import React, { useState } from "react";
 import {
@@ -10,7 +11,7 @@ import {
 import { Typography, Button, Toast } from "react-native-ui-lib";
 import { useSelector } from "react-redux";
 import PROXY from "../proxyConfig";
-import { addProject } from "../store/projectsSlice";
+import i18n from "../Translation/i18n";
 
 const JoinProjectModal = ({
   joinModal,
@@ -20,6 +21,7 @@ const JoinProjectModal = ({
 }) => {
   const [projectId, setProjectId] = useState("");
   const user = useSelector((state) => state.auth);
+  const { colors } = useTheme();
 
   const handleJoin = async () => {
     const { data } = await axios.patch(`${PROXY}/projects/join`, {
@@ -51,15 +53,16 @@ const JoinProjectModal = ({
             height: 200,
             padding: 20,
             borderRadius: 10,
-            backgroundColor: "#0080FF",
+            backgroundColor: colors.main,
             justifyContent: "space-evenly",
           }}
         >
           <TextInput
-            placeholder="Project id"
+            placeholder={i18n.t("ProjectId")}
             value={projectId}
+            placeholderTextColor={colors.placeholder}
             style={{
-              backgroundColor: "white",
+              backgroundColor: colors.secondary,
               borderRadius: 10,
               padding: 10,
               ...Typography.text60,
@@ -70,10 +73,10 @@ const JoinProjectModal = ({
           />
           <Button
             labelStyle={Typography.text60}
-            color="#0080FF"
-            backgroundColor="white"
+            color={colors.text}
+            backgroundColor={colors.accent}
             marginV-10
-            label="Join"
+            label={i18n.t("Join")}
             onPress={() => {
               handleJoin();
             }}

@@ -1,3 +1,4 @@
+import { useTheme } from "@react-navigation/native";
 import axios from "axios";
 import React from "react";
 import {
@@ -6,6 +7,7 @@ import {
   TouchableOpacity,
   Chip,
   Checkbox,
+  Typography,
 } from "react-native-ui-lib";
 import PROXY from "../proxyConfig";
 
@@ -19,8 +21,17 @@ const TaskItem = ({ task, setCategories, category, navigation, projectId }) => {
     setCategories(data);
   };
 
+  const { colors } = useTheme();
+
   return (
-    <View key={task.id} bg-white row br50 padding-20 marginV-5>
+    <View
+      key={task.id}
+      backgroundColor={colors.secondary}
+      row
+      br50
+      padding-20
+      marginV-5
+    >
       <TouchableOpacity
         onPress={() => {
           navigation.navigate("EditTaskScreen", { projectId, category, task });
@@ -29,11 +40,30 @@ const TaskItem = ({ task, setCategories, category, navigation, projectId }) => {
         flex-1
         spread
       >
-        <Text style={{ fontSize: 20 }}>{task.name}</Text>
-        <Text>{task.description}</Text>
+        <Text style={{ ...Typography.text60, color: colors.main }}>
+          {task.name}
+        </Text>
+        <Text
+          style={{
+            ...Typography.text70BO,
+            marginVertical: 5,
+            color: colors.placeholder,
+          }}
+        >
+          {task.description}
+        </Text>
         <View flex row marginT-5 style={{ flexWrap: "wrap" }}>
-          {task.workers.map((worker) => (
-            <Chip key={worker.id} label={worker.name} />
+          {task.workers.map((worker, index) => (
+            <Chip
+              key={worker.id}
+              label={worker.name}
+              labelStyle={{ color: colors.black }}
+              containerStyle={{
+                marginHorizontal: index === 0 ? 0 : 5,
+                marginVertical: 5,
+                borderColor: colors.black,
+              }}
+            />
           ))}
         </View>
       </TouchableOpacity>
@@ -49,7 +79,7 @@ const TaskItem = ({ task, setCategories, category, navigation, projectId }) => {
         <Checkbox
           onValueChange={(e) => handleCheck(e)}
           value={task.isDone}
-          color="#0080FF"
+          color={colors.main}
         />
       </View>
     </View>

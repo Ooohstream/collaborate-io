@@ -11,6 +11,8 @@ import { TextInput, ScrollView, Text, TouchableOpacity } from "react-native";
 import axios from "axios";
 import PROXY from "../../proxyConfig";
 import uuid from "react-native-uuid";
+import i18n from "../../Translation/i18n";
+import { useTheme } from "@react-navigation/native";
 
 const AddTaskScreen = ({ route, navigation, setCategories }) => {
   const [projectWorkers, setProjectWorkers] = useState([]);
@@ -24,6 +26,7 @@ const AddTaskScreen = ({ route, navigation, setCategories }) => {
       time: undefined,
     },
   });
+  const { colors } = useTheme();
 
   useEffect(() => {
     const loadWorkers = async () => {
@@ -40,26 +43,27 @@ const AddTaskScreen = ({ route, navigation, setCategories }) => {
   }, []);
 
   const handleAdd = async () => {
-    setAddTaskForm({
-      ...addTaskForm,
-      workers: projectWorkers.filter((worker) => worker.isExecutor === true),
-    });
     const { data } = await axios.post(`${PROXY}/tasks/add`, {
       projectId: route.params.projectId,
       categoryId: route.params.categoryId,
-      task: { ...addTaskForm, id: uuid.v4() },
+      task: {
+        ...addTaskForm,
+        workers: projectWorkers.filter((worker) => worker.isExecutor === true),
+        id: uuid.v4(),
+      },
     });
     setCategories(data);
     navigation.goBack();
   };
 
   return (
-    <View flex backgroundColor="#0080FF" padding-10>
+    <View flex backgroundColor={colors.main} padding-10>
       <TextInput
         value={addTaskForm.name}
-        placeholder="Task"
+        placeholder={i18n.t("TaskNamePlaceholder")}
+        placeholderTextColor={colors.placeholder}
         style={{
-          backgroundColor: "white",
+          backgroundColor: colors.secondary,
           borderRadius: 10,
           padding: 10,
           ...Typography.text60,
@@ -69,12 +73,18 @@ const AddTaskScreen = ({ route, navigation, setCategories }) => {
           setAddTaskForm({ ...addTaskForm, name: e });
         }}
       />
-      <View style={{ minHeight: 100 }} bg-white br20 marginV-10>
+      <View
+        style={{ minHeight: 100 }}
+        backgroundColor={colors.secondary}
+        br20
+        marginV-10
+      >
         <TextInput
           multiline
-          placeholder="Description"
+          placeholder={i18n.t("TaskDescriptionPlaceholder")}
+          placeholderTextColor={colors.placeholder}
           style={{
-            backgroundColor: "white",
+            backgroundColor: colors.secondary,
             borderRadius: 10,
             padding: 10,
             ...Typography.text60,
@@ -86,27 +96,27 @@ const AddTaskScreen = ({ route, navigation, setCategories }) => {
         />
       </View>
       <View
-        bg-white
+        backgroundColor={colors.secondary}
         br20
         padding-10
         marginV-10
         flex-1
         style={{ minHeight: 150 }}
       >
-        <Text style={{ ...Typography.text60, borderBottomWidth: 2 }}>
-          Assign executors
+        <Text style={{ ...Typography.text60, marginBottom: 10 }}>
+          {i18n.t("AssignExecutors")}
         </Text>
-        <ScrollView>
+        <ScrollView backgroundColor={colors.secondary}>
           {projectWorkers.map((worker) => (
             <TouchableOpacity
               key={worker.id}
               style={{
                 borderWidth: 1,
-                borderColor: worker.isExecutor ? "#0080FF" : "lightgray",
+                borderColor: worker.isExecutor ? colors.accent : colors.main,
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 10,
-                marginVertical: 5,
+                marginVertical: 10,
                 borderRadius: 10,
               }}
               activeOpacity={0.7}
@@ -122,7 +132,9 @@ const AddTaskScreen = ({ route, navigation, setCategories }) => {
                 });
               }}
             >
-              <Text style={Typography.text60}>{worker.name}</Text>
+              <Text style={{ ...Typography.text60, color: colors.main }}>
+                {worker.name}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -133,9 +145,11 @@ const AddTaskScreen = ({ route, navigation, setCategories }) => {
           setAddTaskForm({ ...addTaskForm, badgeColor: val });
         }}
         containerStyle={{
+          backgroundColor: colors.secondary,
           borderRadius: 10,
           marginVertical: 10,
         }}
+        style={{ backgroundColor: colors.secondary }}
         colors={[
           "#007bff",
           "#6c757d",
@@ -152,18 +166,18 @@ const AddTaskScreen = ({ route, navigation, setCategories }) => {
           style={{
             ...Typography.text50,
             marginBottom: 10,
-            color: "white",
+            color: colors.secondary,
             padding: 5,
           }}
         >
-          Deadline
+          {i18n.t("Deadline")}
         </Text>
         <DateTimePicker
-          placeholder="Date"
-          placeholderTextColor="#dc3545"
+          placeholder={i18n.t("Date")}
+          placeholderTextColor={colors.attention}
           hideUnderline
           style={{
-            backgroundColor: "white",
+            backgroundColor: colors.secondary,
             padding: 10,
             borderRadius: 10,
             ...Typography.text60,
@@ -180,11 +194,11 @@ const AddTaskScreen = ({ route, navigation, setCategories }) => {
           timezoneOffsetInMinutes={180}
         />
         <DateTimePicker
-          placeholder="Time"
-          placeholderTextColor="#dc3545"
+          placeholder={i18n.t("Time")}
+          placeholderTextColor={colors.attention}
           hideUnderline
           style={{
-            backgroundColor: "white",
+            backgroundColor: colors.secondary,
             padding: 10,
             borderRadius: 10,
             ...Typography.text60,
@@ -205,10 +219,10 @@ const AddTaskScreen = ({ route, navigation, setCategories }) => {
 
       <Button
         labelStyle={Typography.text60}
-        color="#0080FF"
-        backgroundColor="white"
+        color={colors.secondary}
+        backgroundColor={colors.accent}
         marginV-10
-        label="Add"
+        label={i18n.t("AddTaskButton")}
         onPress={() => {
           handleAdd();
         }}

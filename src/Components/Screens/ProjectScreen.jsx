@@ -13,12 +13,15 @@ import EditTaskScreen from "./EditTaskScreen";
 import AddTaskScreen from "./AddTaskScreen";
 import axios from "axios";
 import PROXY from "../../proxyConfig";
+import i18n from "../../Translation/i18n";
+import { useTheme } from "@react-navigation/native";
 
 const Project = createNativeStackNavigator();
 
-const ProjectScreen = ({ route, navigation }) => {
+const ProjectScreen = ({ route, navigation, setProjects }) => {
   const [categories, setCategories] = useState([]);
   const [activeSections, setActiveSections] = useState([]);
+  const { colors } = useTheme();
 
   useEffect(() => {
     const init = async () => {
@@ -31,6 +34,10 @@ const ProjectScreen = ({ route, navigation }) => {
     };
     init();
   }, []);
+
+  useEffect(() => {
+    setActiveSections([]);
+  }, [categories]);
 
   const _renderHeader = (section) => {
     return (
@@ -71,36 +78,40 @@ const ProjectScreen = ({ route, navigation }) => {
   return (
     <Project.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: "#0080FF" },
+        headerStyle: { backgroundColor: colors.main },
         headerShadowVisible: false,
+        animation: "fade",
+        headerTintColor: colors.secondary,
       }}
     >
       <Project.Screen
         name="ProjectMain"
         options={(params) => ({
-          title: "Project",
+          title: "",
           headerRight: () => (
             <HeaderRightProjectScreen
               onPress={() => {
-                params.navigation.navigate("ProjectSettingsScreen");
+                params.navigation.navigate("ProjectSettingsScreen", {
+                  id: route.params.id,
+                });
               }}
             />
           ),
         })}
       >
         {(props) => (
-          <ScrollView style={{ flex: 1, backgroundColor: "#fafafa" }}>
+          <ScrollView style={{ flex: 1, backgroundColor: colors.secondary }}>
             <Accordion
               expandMultiple
               sectionContainerStyle={{
                 width: "100%",
                 paddingVertical: 5,
-                backgroundColor: "#DEE1E6",
+                backgroundColor: colors.main,
                 marginVertical: 10,
               }}
               touchableProps={{
                 activeOpacity: 0.6,
-                underlayColor: "#DEE1E6",
+                underlayColor: colors.main,
               }}
               sections={categories}
               activeSections={activeSections}
@@ -116,10 +127,12 @@ const ProjectScreen = ({ route, navigation }) => {
         )}
       </Project.Screen>
       <Project.Screen name="ProjectSettingsScreen" options={{ title: "" }}>
-        {(props) => <ProjectSettingsScreen {...props} />}
+        {(props) => (
+          <ProjectSettingsScreen {...props} setProjects={setProjects} />
+        )}
       </Project.Screen>
       <Project.Screen name="EditTaskScreen" options={{ title: "" }}>
-        {(props) => <EditTaskScreen {...props} />}
+        {(props) => <EditTaskScreen {...props} setCategories={setCategories} />}
       </Project.Screen>
       <Project.Screen name="AddTaskScreen" options={{ title: "" }}>
         {(props) => <AddTaskScreen {...props} setCategories={setCategories} />}

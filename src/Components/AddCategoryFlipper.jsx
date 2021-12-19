@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { View, TextField, Button } from "react-native-ui-lib";
+import { View, TextField, Button, Typography } from "react-native-ui-lib";
 import FlipCard from "react-native-flip-card";
 import DelayInput from "react-native-debounce-input";
 import axios from "axios";
 import PROXY from "../proxyConfig";
 import uuid from "react-native-uuid";
+import i18n from "../Translation/i18n";
+import { useTheme } from "@react-navigation/native";
 
 const AddCategoryFlipper = ({ setCategories, projectId }) => {
   const [flip, setFlip] = useState(false);
   const [name, setName] = useState("");
+  const { colors } = useTheme();
 
   const handleChange = async (e) => {
     if (e) {
@@ -36,9 +39,11 @@ const AddCategoryFlipper = ({ setCategories, projectId }) => {
       style={{ marginVertical: 20 }}
     >
       <Button
-        label="Add category"
+        labelStyle={Typography.text60}
+        label={i18n.t("AddCategoryButton")}
         disabled
-        disabledBackgroundColor="#0080FF"
+        color={colors.secondary}
+        disabledBackgroundColor={colors.accent}
         onPress={() => {
           setFlip(!setFlip);
         }}
@@ -50,13 +55,13 @@ const AddCategoryFlipper = ({ setCategories, projectId }) => {
             width: "95%",
             borderBottomWidth: 1,
             padding: 5,
-            borderBottomColor: "lightgray",
+            borderBottomColor: colors.placeholder,
           }}
           delayTimeout={1000}
           onChangeText={(e) => {
             handleChange(e);
           }}
-          placeholder="Category name"
+          placeholder={i18n.t("AddCategoryPlaceholder")}
         />
       </View>
     </FlipCard>

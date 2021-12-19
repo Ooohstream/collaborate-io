@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux";
 import { setAuth } from "../../store/authSlice";
 import axios from "axios";
 import PROXY from "../../proxyConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "@react-navigation/native";
 
 const LoginScreen = () => {
   const expand = useRef(new Animated.Value(50)).current;
@@ -20,6 +22,8 @@ const LoginScreen = () => {
       useNativeDriver: false,
     }).start();
   };
+
+  const { colors } = useTheme();
 
   const dispatcher = useDispatch();
 
@@ -38,6 +42,10 @@ const LoginScreen = () => {
           name,
           photoUrl,
         });
+        await AsyncStorage.setItem(
+          "user_info",
+          JSON.stringify({ email, id, name })
+        );
         dispatcher(setAuth({ email, id, name, photoUrl }));
       }
     } catch (error) {
@@ -48,10 +56,10 @@ const LoginScreen = () => {
   const AnimatedButton = Animated.createAnimatedComponent(Button);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ ...styles.container, backgroundColor: colors.main }}>
       <View flex width="60%">
         <View flex-3 center>
-          <Icon tintColor="white" size={100} source={appLogo} />
+          <Icon tintColor={colors.secondary} size={100} source={appLogo} />
           <Text text60 white>
             Collaborate.io
           </Text>
@@ -63,11 +71,10 @@ const LoginScreen = () => {
               height: expand,
             }}
             iconOnRight
-            bg-white
-            color="black"
+            backgroundColor={colors.secondary}
             round
             iconSource={g}
-            iconStyle={{ width: 35, height: 35, tintColor: "#0080FF" }}
+            iconStyle={{ width: 35, height: 35, tintColor: undefined }}
             size="large"
             onPress={() => {
               expandIn();
@@ -85,7 +92,6 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0080FF",
     alignItems: "center",
     justifyContent: "center",
   },

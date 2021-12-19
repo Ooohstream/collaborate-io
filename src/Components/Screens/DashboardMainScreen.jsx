@@ -1,17 +1,19 @@
 import React from "react";
 import { View, Button } from "react-native-ui-lib";
-import { useSelector } from "react-redux";
 import { FlatGrid } from "react-native-super-grid";
 import plus from "/assets/plus.png";
 import ProjectTile from "../ProjectTile";
+import { useTheme } from "@react-navigation/native";
 
-const DashboardMainScreen = ({ navigation, projects }) => {
+const DashboardMainScreen = ({ navigation, projects, searchTerm }) => {
+  const { colors } = useTheme();
+
   return (
-    <View flex flexG bg-grey70>
+    <View flex flexG style={{ backgroundColor: colors.secondary }}>
       <FlatGrid
         style={{ position: "relative" }}
-        itemDimension={130}
-        data={projects}
+        itemDimension={200}
+        data={projects.filter((project) => project.name.includes(searchTerm))}
         renderItem={({ item }) => {
           return (
             <ProjectTile
@@ -35,9 +37,10 @@ const DashboardMainScreen = ({ navigation, projects }) => {
         }}
         round
         text60BL
-        backgroundColor="white"
+        link
+        linkColor={colors.main}
         iconSource={plus}
-        iconStyle={{ width: 40, height: 40 }}
+        iconStyle={{ width: 48, height: 48 }}
         onPress={() => {
           navigation.navigate("AddNewProjectScreen");
         }}

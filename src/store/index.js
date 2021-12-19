@@ -1,10 +1,10 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./authSlice";
-import projectsSlice from "./projectsSlice";
+import themeSlice from "./themeSlice";
 
 const rootReducer = combineReducers({
   auth: authSlice,
-  projects: projectsSlice,
+  theme: themeSlice,
 });
 
 export const store = configureStore({

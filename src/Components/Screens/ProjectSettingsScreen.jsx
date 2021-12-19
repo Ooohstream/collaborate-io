@@ -1,62 +1,133 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Button, Typography, Chip } from "react-native-ui-lib";
 import { TextInput, TouchableOpacity } from "react-native";
-import uuid from "react-native-uuid";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import PROXY from "../../proxyConfig";
+import i18n from "../../Translation/i18n";
+import { useTheme } from "@react-navigation/native";
+import * as Clipboard from "expo-clipboard";
 
-const ProjectSettingsScreen = ({ navigation }) => {
-  const name = useSelector((state) => state.auth.name);
+const ProjectSettingsScreen = ({ route, navigation, setProjects }) => {
+  const id = useSelector((state) => state.auth.id);
+  const [editProjectForm, setEditProjectForm] = useState({});
+  const { colors } = useTheme();
+
+  useEffect(() => {
+    const init = async () => {
+      const { data } = await axios.get(`${PROXY}/project`, {
+        params: {
+          id: route.params.id,
+        },
+      });
+      setEditProjectForm({
+        name: data.name,
+        description: data.description,
+        id: data.id,
+        owner: data.workers.find((worker) => worker.id === data.owner),
+      });
+    };
+    init();
+  }, []);
+
+  const handleSave = async () => {
+    const { data } = await axios.put(`${PROXY}/projects/edit`, {
+      id: route.params.id,
+      name: editProjectForm.name,
+      description: editProjectForm.description,
+      userId: id,
+    });
+    setProjects(data);
+    navigation.goBack();
+  };
 
   return (
-    <View flex backgroundColor="#0080FF" padding-10>
+    <View flex backgroundColor={colors.main} padding-10>
       <TextInput
-        placeholder="Project Name"
+        placeholder={i18n.t("ProjectNamePlaceholder")}
+        placeholderTextColor={colors.placeholder}
+        value={editProjectForm?.name}
+        onChangeText={(e) => {
+          setEditProjectForm({ ...editProjectForm, name: e });
+        }}
         style={{
-          backgroundColor: "white",
+          backgroundColor: colors.secondary,
           borderRadius: 10,
           padding: 10,
           ...Typography.text60,
         }}
       />
-      <View height={200} bg-white br20 marginV-10 flex-1>
+      <View
+        height={200}
+        backgroundColor={colors.secondary}
+        br20
+        marginV-10
+        flex-1
+      >
         <TextInput
           multiline={true}
-          placeholder="Description"
+          value={editProjectForm?.description}
+          onChangeText={(e) => {
+            setEditProjectForm({ ...editProjectForm, description: e });
+          }}
+          placeholder={i18n.t("ProjectDescriptionPlaceholder")}
+          placeholderTextColor={colors.placeholder}
           style={{
-            backgroundColor: "white",
+            backgroundColor: colors.secondary,
             borderRadius: 10,
             padding: 10,
             ...Typography.text60,
           }}
         />
       </View>
-      <Chip
-        backgroundColor="white"
-        labelStyle={Typography.text50BO}
-        label={`Project owner: ${name}`}
-        containerStyle={{ borderWidth: 0 }}
-      />
-      <TouchableOpacity
-        activeOpacity={0.9}
+      <View
         style={{
-          backgroundColor: "white",
           padding: 10,
           borderRadius: 10,
           marginVertical: 10,
         }}
+        backgroundColor={colors.secondary}
       >
-        <Text style={Typography.text60}>Copy ID to clipboard</Text>
-        <Text style={Typography.text70}>
-          You can share it to invite collaborators!
+        <Text style={Typography.text60}>{`${i18n.t("ProjectOwner")}: ${
+          editProjectForm?.owner?.name
+        }`}</Text>
+      </View>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        style={{
+          backgroundColor: colors.secondary,
+          padding: 10,
+          borderRadius: 10,
+          marginVertical: 10,
+        }}
+        onPress={() => Clipboard.setString(editProjectForm.id)}
+      >
+        <Text
+          style={{
+            ...Typography.text60,
+            color: colors.black,
+            textAlign: "center",
+          }}
+        >
+          {i18n.t("ProjectYouCanShare")}
         </Text>
-        <Text>{uuid.v4()}</Text>
+        <Text
+          style={{
+            ...Typography.text70,
+            color: colors.black,
+            textAlign: "center",
+          }}
+        >
+          {editProjectForm?.id}
+        </Text>
       </TouchableOpacity>
       <Button
         labelStyle={Typography.text60}
-        color="#0080FF"
-        backgroundColor="white"
+        color={colors.secondary}
+        backgroundColor={colors.accent}
         marginV-10
-        label="Save"
+        label={i18n.t("ProjectSaveButton")}
+        onPress={() => handleSave()}
       />
     </View>
   );

@@ -1,1 +1,1 @@
-export default PROXY = "http://192.168.166.150:5000";
+export default PROXY = "http://192.168.0.157:5000";

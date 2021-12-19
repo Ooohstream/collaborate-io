@@ -7,6 +7,7 @@ import plus from "assets/plus.png";
 import axios from "axios";
 import PROXY from "../proxyConfig";
 import { TouchableOpacity } from "react-native";
+import { useTheme } from "@react-navigation/native";
 
 const CategoryHeader = ({
   projectId,
@@ -17,6 +18,7 @@ const CategoryHeader = ({
   navigation,
 }) => {
   const [inputMode, setInputMode] = useState(false);
+  const { colors } = useTheme();
 
   const handleRemove = async () => {
     const { data } = await axios.delete(`${PROXY}/categories/remove`, {
@@ -65,7 +67,9 @@ const CategoryHeader = ({
               setInputMode(!inputMode);
             }}
           >
-            <Text style={Typography.text40}>{name}</Text>
+            <Text color={colors.secondary} style={Typography.text40}>
+              {name}
+            </Text>
           </TouchableOpacity>
         )}
       </View>
@@ -73,10 +77,9 @@ const CategoryHeader = ({
         <Button
           marginR-20
           iconSource={plus}
-          iconStyle={{ width: 32, height: 32 }}
+          iconStyle={{ width: 32, height: 32, tintColor: colors.secondary }}
           link
           labelStyle={Typography.text30}
-          color="black"
           onPress={() =>
             navigation.navigate("AddTaskScreen", { categoryId: id, projectId })
           }
@@ -86,7 +89,7 @@ const CategoryHeader = ({
           style={{ alignSelf: "flex-end" }}
           link
           iconSource={trashCan}
-          iconStyle={{ width: 32, height: 32, tintColor: "black" }}
+          iconStyle={{ width: 32, height: 32, tintColor: colors.secondary }}
         />
       </View>
     </View>
